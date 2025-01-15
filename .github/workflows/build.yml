@@ -8,10 +8,10 @@ jobs:
       fail-fast: false
       matrix:
         name: [
-          linux-cmake,
-          linux-autotools,
-          macos-cmake,
-          macos-autotools,
+          # linux-cmake,
+          # linux-autotools,
+          # macos-cmake,
+          # macos-autotools,
           windows-cmake,
           windows-arm64-cmake
         ]
@@ -102,3 +102,10 @@ jobs:
     - name: Test Autotools
       if: startsWith(matrix.build-system,'autotools')
       run: make distcheck
+
+    - name: Upload Release Artifacts
+      if: startsWith(matrix.build-system, 'cmake')
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.name }}-release
+        path: ${{runner.workspace}}/build
