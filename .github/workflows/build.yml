@@ -97,3 +97,4 @@ jobs:
     - name: Test Autotools
       if: startsWith(matrix.build-system,'autotools')
       run: make distcheck
+
