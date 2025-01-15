@@ -8,11 +8,12 @@ jobs:
       fail-fast: false
       matrix:
         name: [
-        linux-cmake,
-        linux-autotools,
-        macos-cmake,
-        macos-autotools,
-        windows-cmake
+          linux-cmake,
+          linux-autotools,
+          macos-cmake,
+          macos-autotools,
+          windows-cmake,
+          windows-arm64-cmake
         ]
         include:
           - name: linux-cmake
@@ -38,6 +39,11 @@ jobs:
             build-system: cmake
             configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
 
+          - name: windows-arm64-cmake
+            os: windows-latest
+            build-system: cmake
+            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows
+
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -55,7 +61,7 @@ jobs:
     - name: Install Windows dependencies
       if: startsWith(matrix.os,'windows')
       run: |
-        vcpkg install libsndfile:x64-windows opus:x64-windows fftw3:x64-windows
+        vcpkg install libsndfile:${{matrix.configure-options.contains('x64') && 'x64-windows' || 'arm64-windows'}} opus:${{matrix.configure-options.contains('x64') && 'x64-windows' || 'arm64-windows'}} fftw3:${{matrix.configure-options.contains('x64') && 'x64-windows' || 'arm64-windows'}}
 
     - name: Create CMake Build Environment
       if: startsWith(matrix.build-system,'cmake')
