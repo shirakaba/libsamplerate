@@ -58,10 +58,15 @@ jobs:
       if: startsWith(matrix.os,'macos')
       run: brew install automake libtool libsndfile fftw
 
-    - name: Install Windows dependencies
-      if: startsWith(matrix.os,'windows')
+    - name: Install Windows dependencies for x64
+      if: matrix.name == 'windows-cmake'
       run: |
-        vcpkg install libsndfile:${{matrix.configure-options.contains('x64') && 'x64-windows' || 'arm64-windows'}} opus:${{matrix.configure-options.contains('x64') && 'x64-windows' || 'arm64-windows'}} fftw3:${{matrix.configure-options.contains('x64') && 'x64-windows' || 'arm64-windows'}}
+        vcpkg install libsndfile:x64-windows opus:x64-windows fftw3:x64-windows
+
+    - name: Install Windows dependencies for ARM64
+      if: matrix.name == 'windows-cmake-arm64'
+      run: |
+        vcpkg install libsndfile:arm64-windows opus:arm64-windows fftw3:arm64-windows
 
     - name: Create CMake Build Environment
       if: startsWith(matrix.build-system,'cmake')
@@ -97,4 +102,3 @@ jobs:
     - name: Test Autotools
       if: startsWith(matrix.build-system,'autotools')
       run: make distcheck
-
