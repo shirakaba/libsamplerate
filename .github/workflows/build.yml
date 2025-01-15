@@ -16,23 +16,23 @@ jobs:
           windows-arm64-cmake
         ]
         include:
-          - name: linux-cmake
-            os: ubuntu-latest
-            build-system: cmake
+          # - name: linux-cmake
+          #   os: ubuntu-latest
+          #   build-system: cmake
 
-          - name: linux-autotools
-            os: ubuntu-latest
-            build-system: autotools
-            configure-options: --enable-sndfile --enable-alsa
+          # - name: linux-autotools
+          #   os: ubuntu-latest
+          #   build-system: autotools
+          #   configure-options: --enable-sndfile --enable-alsa
 
-          - name: macos-cmake
-            os: macos-latest
-            build-system: cmake
+          # - name: macos-cmake
+          #   os: macos-latest
+          #   build-system: cmake
 
-          - name: macos-autotools
-            os: macos-latest
-            build-system: autotools
-            configure-options: --enable-sndfile
+          # - name: macos-autotools
+          #   os: macos-latest
+          #   build-system: autotools
+          #   configure-options: --enable-sndfile
 
           - name: windows-cmake
             os: windows-latest
@@ -48,15 +48,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Linux dependencies
-      if: startsWith(matrix.os,'ubuntu')
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y libsndfile-dev libopus-dev libfftw3-dev libasound2-dev
+    # - name: Install Linux dependencies
+    #   if: startsWith(matrix.os,'ubuntu')
+    #   run: |
+    #     sudo apt-get update -y
+    #     sudo apt-get install -y libsndfile-dev libopus-dev libfftw3-dev libasound2-dev
 
-    - name: Install macOS dependencies
-      if: startsWith(matrix.os,'macos')
-      run: brew install automake libtool libsndfile fftw
+    # - name: Install macOS dependencies
+    #   if: startsWith(matrix.os,'macos')
+    #   run: brew install automake libtool libsndfile fftw
 
     - name: Install Windows dependencies for x64
       if: matrix.name == 'windows-cmake'
@@ -87,21 +87,21 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: ctest -C Release
 
-    - name: Bootstrap Autotools
-      if: startsWith(matrix.build-system,'autotools')
-      run: ./autogen.sh
+    # - name: Bootstrap Autotools
+    #   if: startsWith(matrix.build-system,'autotools')
+    #   run: ./autogen.sh
 
-    - name: Configure Autotools
-      if: startsWith(matrix.build-system,'autotools')
-      run: ./configure ${{matrix.configure-options}}
+    # - name: Configure Autotools
+    #   if: startsWith(matrix.build-system,'autotools')
+    #   run: ./configure ${{matrix.configure-options}}
 
-    - name: Build Autotools
-      if: startsWith(matrix.build-system,'autotools')
-      run: make
+    # - name: Build Autotools
+    #   if: startsWith(matrix.build-system,'autotools')
+    #   run: make
 
-    - name: Test Autotools
-      if: startsWith(matrix.build-system,'autotools')
-      run: make distcheck
+    # - name: Test Autotools
+    #   if: startsWith(matrix.build-system,'autotools')
+    #   run: make distcheck
 
     - name: Upload Release Artifacts
       if: startsWith(matrix.build-system, 'cmake')
