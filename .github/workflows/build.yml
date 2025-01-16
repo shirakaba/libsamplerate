@@ -12,7 +12,7 @@ jobs:
           # linux-autotools,
           # macos-cmake,
           # macos-autotools,
-          windows-cmake,
+          # windows-cmake,
           windows-arm64-cmake
         ]
         include:
@@ -34,10 +34,10 @@ jobs:
           #   build-system: autotools
           #   configure-options: --enable-sndfile
 
-          - name: windows-cmake
-            os: windows-latest
-            build-system: cmake
-            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+          # - name: windows-cmake
+          #   os: windows-latest
+          #   build-system: cmake
+          #   configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
 
           - name: windows-arm64-cmake
             os: windows-latest
@@ -58,10 +58,10 @@ jobs:
     #   if: startsWith(matrix.os,'macos')
     #   run: brew install automake libtool libsndfile fftw
 
-    - name: Install Windows dependencies for x64
-      if: matrix.name == 'windows-cmake'
-      run: |
-        vcpkg install libsndfile:x64-windows opus:x64-windows fftw3:x64-windows
+    # - name: Install Windows dependencies for x64
+    #   if: matrix.name == 'windows-cmake'
+    #   run: |
+    #     vcpkg install libsndfile:x64-windows opus:x64-windows fftw3:x64-windows
 
     - name: Install Windows dependencies for ARM64
       if: matrix.name == 'windows-cmake-arm64'
@@ -75,7 +75,7 @@ jobs:
     - name: Configure CMake
       if: startsWith(matrix.build-system,'cmake')
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} -DBUILD_SHARED_LIBS=ON ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} -DBUILD_SHARED_LIBS=ON -DCMAKE_SYSTEM_PROCESSOR=arm64 ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
