@@ -41,7 +41,6 @@ jobs:
 
           - name: windows-arm64-cmake
             os: windows-latest
-            runs-on: ['windows-arm64']
             build-system: cmake
             configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows
 
