@@ -13,12 +13,15 @@ jobs:
           # macos-cmake,
           # macos-autotools,
           # windows-cmake,
-          windows-arm64-cmake
+          windows-x64-cmake-lib,
+          windows-x64-cmake-dll,
+          windows-arm64-cmake-lib,
+          windows-arm64-cmake-dll,
         ]
         include:
           # - name: linux-cmake
           #   os: ubuntu-latest
-          #   build-system: cmake
+          #   build-system: -DCMAKE_BUILD_TYPE=Release cmake
 
           # - name: linux-autotools
           #   os: ubuntu-latest
@@ -27,22 +30,32 @@ jobs:
 
           # - name: macos-cmake
           #   os: macos-latest
-          #   build-system: cmake
+          #   build-system: -DCMAKE_BUILD_TYPE=Release cmake
 
           # - name: macos-autotools
           #   os: macos-latest
           #   build-system: autotools
           #   configure-options: --enable-sndfile
 
-          # - name: windows-cmake
-          #   os: windows-latest
-          #   build-system: cmake
-          #   configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-
-          - name: windows-arm64-cmake
+          - name: windows-x64-cmake-lib
             os: windows-latest
             build-system: cmake
-            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows -A ARM64
+            configure-options: -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+
+          - name: windows-x64-cmake-dll
+            os: windows-latest
+            build-system: cmake
+            configure-options: -DBUILD_SHARED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+
+          - name: windows-arm64-cmake-lib
+            os: windows-latest
+            build-system: cmake
+            configure-options: -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows -A ARM64
+
+          - name: windows-arm64-cmake-dll
+            os: windows-latest
+            build-system: cmake
+            configure-options: -DBUILD_SHARED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows -A ARM64
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -58,13 +71,13 @@ jobs:
     #   if: startsWith(matrix.os,'macos')
     #   run: brew install automake libtool libsndfile fftw
 
-    # - name: Install Windows dependencies for x64
-    #   if: matrix.name == 'windows-cmake'
-    #   run: |
-    #     vcpkg install libsndfile:x64-windows opus:x64-windows fftw3:x64-windows
+    - name: Install Windows dependencies for x64
+      if: matrix.name == 'windows-x64-cmake-lib' || matrix.name == 'windows-x64-cmake-dll'
+      run: |
+        vcpkg install libsndfile:x64-windows opus:x64-windows fftw3:x64-windows
 
     - name: Install Windows dependencies for ARM64
-      if: matrix.name == 'windows-cmake-arm64'
+      if: matrix.name == 'windows-arm64-cmake-lib' || matrix.name == 'windows-arm64-cmake-dll'
       run: |
         vcpkg install libsndfile:arm64-windows opus:arm64-windows fftw3:arm64-windows
 
@@ -74,10 +87,8 @@ jobs:
 
     - name: Configure CMake
       if: startsWith(matrix.build-system,'cmake')
-      # The Windows ARM runner ends up selecting the x64 compiler unless you
-      # explicitly pass `-A ARM64`.
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=Release ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
