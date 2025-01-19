@@ -73,10 +73,14 @@ jobs:
       if: startsWith(matrix.build-system,'cmake')
       run: cmake -E make_directory ${{runner.workspace}}/build
 
+    - name: List Available Compilers
+      run: |
+        dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.42.34433\bin\" /s /b | findstr "cl.exe"
+
     - name: Configure CMake
       if: startsWith(matrix.build-system,'cmake')
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} -A ARM64 ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
