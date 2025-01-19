@@ -75,8 +75,10 @@ jobs:
 
     - name: Configure CMake
       if: startsWith(matrix.build-system,'cmake')
+      # The Windows ARM runner ends up selecting the x64 compiler unless you
+      # explicitly pass `-A ARM64`.
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} -A ARM64 ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} ${{ runner.arch == 'ARM64' && '-A ARM64' || '' }} -DCMAKE_BUILD_TYPE=Release ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
