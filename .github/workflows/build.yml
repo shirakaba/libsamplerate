@@ -42,7 +42,7 @@ jobs:
           - name: windows-arm64-cmake
             os: windows-latest
             build-system: cmake
-            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows
+            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-windows -A ARM64
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -77,7 +77,7 @@ jobs:
       # The Windows ARM runner ends up selecting the x64 compiler unless you
       # explicitly pass `-A ARM64`.
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} ${{ runner.arch == 'ARM64' && '-A ARM64' || '' }} -DCMAKE_BUILD_TYPE=Release ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=Release ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
